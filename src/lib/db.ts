@@ -7,17 +7,27 @@ declare global {
   var __cockroachPool: Pool | undefined;
 }
 
-const pool =
-  global.__cockroachPool ||
-  new Pool({
-    connectionString,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-    max: 10,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,
-  });
+const poolConfig = connectionString
+  ? {
+      connectionString,
+      ssl: { rejectUnauthorized: false },
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    }
+  : {
+      host: process.env.DB_HOST || process.env.PGHOST,
+      port: parseInt(process.env.DB_PORT || process.env.PGPORT || '26257', 10),
+      database: process.env.DB_NAME || process.env.PGDATABASE || 'defaultdb',
+      user: process.env.DB_USER || process.env.PGUSER,
+      password: process.env.DB_PASSWORD || process.env.PGPASSWORD,
+      ssl: { rejectUnauthorized: false },
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    };
+
+const pool = global.__cockroachPool || new Pool(poolConfig);
 
 if (process.env.NODE_ENV !== 'production') {
   global.__cockroachPool = pool;

@@ -1,11 +1,12 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT } from 'jose/jwt/sign';
+import { jwtVerify } from 'jose/jwt/verify';
 import { cookies } from 'next/headers';
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'stoka-pesquisa-secret-key-2025-token-random-key'
 );
 
-const COOKIE_NAME = 'stoka_session';
+export const COOKIE_NAME = process.env.COOKIE_NAME || 'stoka_session';
 
 export interface UserSession {
   id: string;

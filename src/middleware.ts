@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
+import { jwtVerify } from "jose/jwt/verify";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "stoka-pesquisa-secret-key-2025-token-random-key"
@@ -17,7 +17,8 @@ export async function middleware(request: NextRequest) {
 
   if (!isProtected) return NextResponse.next();
 
-  const token = request.cookies.get("stoka_session")?.value;
+  const cookieName = process.env.COOKIE_NAME || "stoka_session";
+  const token = request.cookies.get(cookieName)?.value;
 
   if (!token) {
     if (pathname.startsWith("/api/")) {
